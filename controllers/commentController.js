@@ -4,11 +4,14 @@ import Post from '../models/Post.js';
 export const addComment = async (req, res) => {
   try {
     const { content } = req.body;
-    const { idPost } = req.params;
+    const { postId } = req.params;
+
+    const post = await Post.findOne({ idPost: postId });
+    if (!post) return res.status(404).json({ error: 'Post not found' });
 
     const comment = new Comment({
       content,
-      postId: idPost,
+      postId: post.idPost,
       author: {
         id: req.user.id,
         name: req.user.name
@@ -16,9 +19,10 @@ export const addComment = async (req, res) => {
     });
 
     await comment.save();
+    
     await Post.updateOne(
-      { idPost },
-      { $inc: { commentsCount: 1 } }
+      { idPost: postId },
+      { $push: { comments: comment.commentId } }
     );
 
     res.status(201).json(comment);
@@ -29,8 +33,9 @@ export const addComment = async (req, res) => {
 
 export const getComments = async (req, res) => {
   try {
-    const comments = await Comment.find({ postId: req.params.idPost })
-      .sort({ createdAt: -1 });
+    const { postId } = req.params;
+    
+    const comments = await Comment.find({ postId }).sort({ createdAt: -1 });
     res.json(comments);
   } catch (error) {
     res.status(500).json({ error: error.message });

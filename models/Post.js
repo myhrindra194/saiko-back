@@ -6,11 +6,11 @@ const PostSchema = new mongoose.Schema({
   content: { type: String, required: true, maxlength: 2000 },
   isAnonymous: { type: Boolean, default: false },
   author: {
-    id: { type: String, required: true},
+    id: { type: String, required: true },
     name: { type: String, required: true }
   },
-  likesCount: { type: Number, default: 0 },
-  commentsCount: { type: Number, default: 0 },
+  likes: [{ type: String }],
+  comments: [{ type: Number, ref: 'Comment' }],
   createdAt: { type: Date, default: Date.now }
 });
 
