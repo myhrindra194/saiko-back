@@ -36,8 +36,11 @@ router.use(authMiddleware);
  *             properties:
  *               content:
  *                 type: string
+ *               isAnonymous:
+ *                 type: boolean
  *             required:
  *               - content
+ *               - isAnonymous
  *     responses:
  *       201:
  *         description: Commentaire ajouté

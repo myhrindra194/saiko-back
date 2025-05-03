@@ -53,6 +53,7 @@ const swaggerOptions = {
           properties: {
             commentId: { type: 'integer', example: 1 },
             content: { type: 'string', example: 'Super post !' },
+            isAnonymous: { type: 'boolean', example: 'true' },
             author: {
               type: 'object',
               properties: {

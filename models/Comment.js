@@ -4,6 +4,7 @@ import Counter from './Counter.js';
 const CommentSchema = new mongoose.Schema({
   commentId: { type: Number, unique: true },
   content: { type: String, required: true, maxlength: 1000 },
+  isAnonymous: {type: Boolean, default: true},
   author: {
     id: { type: String, required: true },
     name: { type: String, required: true }

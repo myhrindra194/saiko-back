@@ -3,7 +3,7 @@ import Post from '../models/Post.js';
 
 export const addComment = async (req, res) => {
   try {
-    const { content } = req.body;
+    const { content, isAnonymous } = req.body;
     const { postId } = req.params;
 
     const post = await Post.findOne({ idPost: postId });
@@ -12,6 +12,7 @@ export const addComment = async (req, res) => {
     const comment = new Comment({
       content,
       postId: post.idPost,
+      isAnonymous,
       author: {
         id: req.user.id,
         name: req.user.name
