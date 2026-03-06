@@ -1,4 +1,10 @@
-import { Account, Client } from 'node-appwrite';
+import { createClient } from '@supabase/supabase-js';
+
+// server-side middleware to verify Supabase JWT tokens
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_KEY
+);
 
 export default async (req, res, next) => {
   try {
@@ -6,36 +12,26 @@ export default async (req, res, next) => {
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({ error: 'Authentification requise' });
     }
-    
-    const sessionToken = authHeader.split(' ')[1];
 
-    const client = new Client()
-      .setEndpoint(process.env.APPWRITE_ENDPOINT)
-      .setProject(process.env.APPWRITE_PROJECT_ID)
-      .setSession(sessionToken);
+    const token = authHeader.split(' ')[1];
 
-    if (process.env.APPWRITE_API_KEY) {
-      client.setKey(process.env.APPWRITE_API_KEY);
-    }
-
-    const account = new Account(client);
-    try {
-      const user = await account.get();
-      
-      req.user = {
-        id: user.$id,
-        name: user.name,
-        email: user.email
-      };
-      
-      next();
-    } catch (error) {
-      console.error('Détails erreur Appwrite:', error.response);
-      return res.status(401).json({ 
+    const { data, error } = await supabase.auth.getUser(token);
+    const user = data?.user;
+    if (error || !user) {
+      console.error('Supabase auth error:', error);
+      return res.status(401).json({
         error: 'Session invalide',
         details: 'Veuillez vous reconnecter'
       });
     }
+
+    req.user = {
+      id: user.id,
+      name: user.user_metadata?.full_name || user.user_metadata?.name || '',
+      email: user.email
+    };
+
+    next();
   } catch (error) {
     console.error('Erreur auth middleware:', error);
     res.status(500).json({ error: 'Erreur serveur' });
