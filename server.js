@@ -7,6 +7,7 @@ import swaggerUi from 'swagger-ui-express';
 import connectDB from './config/db.js';
 import commentRoutes from './routes/commentRoutes.js';
 import postRoutes from './routes/postRoutes.js';
+import newsRoute from './routes/newsRoutes.js';
 
 const app = express();
 
@@ -79,6 +80,8 @@ app.use(bodyParser.json());
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 connectDB();
+
+app.use('/api/news', newsRoute);
 
 app.use('/posts', postRoutes);
 app.use('/posts', commentRoutes);
