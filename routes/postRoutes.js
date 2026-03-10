@@ -176,16 +176,11 @@ router.delete('/:postId', deletePost);
  *           type: integer
  *     responses:
  *       200:
- *         description: Statut du like mis à jour
+ *         description: Publication mise à jour après le like/dislike
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 liked:
- *                   type: boolean
- *                 likesCount:
- *                   type: integer
+ *               $ref: '#/components/schemas/Post' // renvoie le post complet mis à jour
  *       404:
  *         description: Publication non trouvée
  */

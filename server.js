@@ -8,6 +8,7 @@ import connectDB from './config/db.js';
 import commentRoutes from './routes/commentRoutes.js';
 import postRoutes from './routes/postRoutes.js';
 import newsRoute from './routes/newsRoutes.js';
+import aiRoutes from './routes/aiRoutes.js';
 
 const app = express();
 
@@ -64,6 +65,21 @@ const swaggerOptions = {
             },
             createdAt: { type: 'string', format: 'date-time' }
           }
+        },
+        NewsApi: {
+          type: 'object',
+          properties: {
+            title: { type: 'string', example: 'Nouvelles avancées en santé mentale' },
+            description: { type: 'string', example: 'Description de l\'article...' },
+            url: { type: 'string', example: 'https://example.com/article' },
+            publishedAt: { type: 'string', format: 'date-time' }
+          }
+        },
+        ChatResponse: {
+          type: 'object',
+          properties: {
+            text: { type: 'string', example: 'La santé mentale fait référence à...' }
+          }
         }
       }
     },
@@ -82,6 +98,7 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
 connectDB();
 
 app.use('/api/news', newsRoute);
+app.use('/api/chat', aiRoutes);
 
 app.use('/posts', postRoutes);
 app.use('/posts', commentRoutes);
