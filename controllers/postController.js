@@ -93,10 +93,7 @@ export const toggleLike = async (req, res) => {
     }
 
     await post.save();
-    res.json({ 
-      liked: likeIndex === -1,
-      likesCount: post.likes.length 
-    });
+    res.json(post);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
