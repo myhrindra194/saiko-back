@@ -1,5 +1,6 @@
 import express from 'express';
 import { askChatbot } from '../controllers/aiController.js';
+import asyncHandler from '../utils/asyncHandler.js';
 
 const router = express.Router();
 
@@ -62,6 +63,6 @@ const router = express.Router();
  *                   type: string
  *                   example: "L'IA est indisponible pour le moment."
  */
-router.post('/', askChatbot);
+router.post('/', asyncHandler(askChatbot));
 
 export default router;

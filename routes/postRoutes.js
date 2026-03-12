@@ -8,6 +8,7 @@ import {
     updatePost
 } from '../controllers/postController.js';
 import authMiddleware from '../middlewares/auth.js';
+import asyncHandler from '../utils/asyncHandler.js';
 
 const router = express.Router();
 
@@ -49,7 +50,7 @@ router.use(authMiddleware);
  *             schema:
  *               $ref: '#/components/schemas/Post'
  */
-router.post('/', createPost);
+router.post('/', asyncHandler(createPost));
 
 /**
  * @swagger
@@ -69,7 +70,7 @@ router.post('/', createPost);
  *               items:
  *                 $ref: '#/components/schemas/Post'
  */
-router.get('/', getPosts);
+router.get('/', asyncHandler(getPosts));
 
 /**
  * @swagger
@@ -95,7 +96,7 @@ router.get('/', getPosts);
  *       404:
  *         description: Publication non trouvée
  */
-router.get('/:postId', getPostById);
+router.get('/:postId', asyncHandler(getPostById));
 
 /**
  * @swagger
@@ -134,7 +135,7 @@ router.get('/:postId', getPostById);
  *       404:
  *         description: Publication non trouvée
  */
-router.put('/:postId', updatePost);
+router.put('/:postId', asyncHandler(updatePost));
 
 /**
  * @swagger
@@ -158,7 +159,7 @@ router.put('/:postId', updatePost);
  *       404:
  *         description: Publication non trouvée
  */
-router.delete('/:postId', deletePost);
+router.delete('/:postId', asyncHandler(deletePost));
 
 /**
  * @swagger
@@ -180,10 +181,10 @@ router.delete('/:postId', deletePost);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Post' // renvoie le post complet mis à jour
+ *               $ref: '#/components/schemas/Post'
  *       404:
  *         description: Publication non trouvée
  */
-router.post('/:postId/like', toggleLike);
+router.post('/:postId/like', asyncHandler(toggleLike));
 
 export default router;
