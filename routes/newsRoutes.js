@@ -1,5 +1,6 @@
 import express from 'express';
 import { getNews } from '../controllers/newsController.js';
+import asyncHandler from '../utils/asyncHandler.js';
 
 const router = express.Router();
 
@@ -55,6 +56,6 @@ const router = express.Router();
  *                   type: string
  *                   example: "Erreur lors de la récupération des articles"
  */
-router.get('/', getNews);
+router.get('/', asyncHandler(getNews));
 
 export default router;

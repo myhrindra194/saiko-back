@@ -1,35 +1,30 @@
 import Comment from '../models/Comment.js';
 import Post from '../models/Post.js';
 
-export const addComment = async (req, res) => {
-  try {
-    const { content, isAnonymous } = req.body;
-    const { postId } = req.params;
+export const addComment = async (req, res, next) => {
+  const { content, isAnonymous } = req.body;
+  const { postId } = req.params;
 
-    const post = await Post.findOne({ idPost: postId });
-    if (!post) return res.status(404).json({ error: 'Post not found' });
+  const post = await Post.findOne({ idPost: postId });
+  if (!post) return res.status(404).json({ error: 'Post not found' });
 
-    const comment = new Comment({
-      content,
-      postId: post.idPost,
-      isAnonymous,
-      author: {
-        id: req.user.id,
-        name: req.user.name
-      }
-    });
+  const comment = new Comment({
+    content,
+    postId: post.idPost,
+    isAnonymous,
+    author: {
+      id: req.user.id,
+      name: req.user.name,
+    },
+  });
 
-    await comment.save();
-    
-    await Post.updateOne(
-      { idPost: postId },
-      { $push: { comments: comment.commentId } }
-    );
+  await comment.save();
+  await Post.updateOne(
+    { idPost: postId },
+    { $push: { comments: comment.commentId } }
+  );
 
-    res.status(201).json(comment);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+  res.status(201).json(comment);
 };
 
 export const getComments = async (req, res) => {

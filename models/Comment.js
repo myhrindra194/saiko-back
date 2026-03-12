@@ -2,15 +2,15 @@ import mongoose from 'mongoose';
 import Counter from './Counter.js';
 
 const CommentSchema = new mongoose.Schema({
-  commentId: { type: Number, unique: true },
+  commentId: { type: Number, unique: true, index: true },
   content: { type: String, required: true, maxlength: 1000 },
   isAnonymous: {type: Boolean, default: true},
   author: {
-    id: { type: String, required: true },
+    id: { type: String, required: true, index: true },
     name: { type: String, required: true }
   },
-  postId: { type: Number, required: true },
-  createdAt: { type: Date, default: Date.now }
+  postId: { type: Number, required: true, index: true },
+  createdAt: { type: Date, default: Date.now, index: true }
 });
 
 CommentSchema.pre('save', async function(next) {
@@ -28,5 +28,8 @@ CommentSchema.pre('save', async function(next) {
     next(error);
   }
 });
+
+// optional compound index for fast post comment lookup
+CommentSchema.index({ postId: 1, createdAt: -1 });
 
 export default mongoose.model('Comment', CommentSchema);

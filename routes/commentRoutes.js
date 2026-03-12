@@ -1,6 +1,7 @@
 import express from 'express';
 import { addComment, getComments } from '../controllers/commentController.js';
 import authMiddleware from '../middlewares/auth.js';
+import asyncHandler from '../utils/asyncHandler.js';
 
 const router = express.Router();
 
@@ -51,7 +52,7 @@ router.use(authMiddleware);
  *       404:
  *         description: Publication non trouvée
  */
-router.post('/:postId/comments', addComment);
+router.post('/:postId/comments', asyncHandler(addComment));
 
 /**
  * @swagger
@@ -79,6 +80,6 @@ router.post('/:postId/comments', addComment);
  *       404:
  *         description: Publication non trouvée
  */
-router.get('/:postId/comments', getComments);
+router.get('/:postId/comments', asyncHandler(getComments));
 
 export default router;

@@ -1,81 +1,60 @@
 import Comment from '../models/Comment.js';
 import Post from '../models/Post.js';
 
-export const createPost = async (req, res) => {
-  try {
-    const { content, isAnonymous = false } = req.body;
-    
-    const post = new Post({
-      content,
-      isAnonymous,
-      author: {
-        id: req.user.id,
-        name: req.user.name
-      },
-      likes: []
-    });
+export const createPost = async (req, res, next) => {
+  const { content, isAnonymous = false } = req.body;
+  const post = new Post({
+    content,
+    isAnonymous,
+    author: {
+      id: req.user.id,
+      name: req.user.name,
+    },
+    likes: [],
+  });
 
-    await post.save();
-    res.status(201).json(post);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+  await post.save();
+  res.status(201).json(post);
 };
 
-export const getPosts = async (req, res) => {
-  try {
-    const posts = await Post.find().sort({ createdAt: -1 });    
-    res.json(posts);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+export const getPosts = async (req, res, next) => {
+  const posts = await Post.find().sort({ createdAt: -1 });
+  res.json(posts);
 };
 
-export const getPostById = async (req, res) => {
-  try {
-    const post = await Post.findOne({ idPost: req.params.postId });
-    if (!post) return res.status(404).json({ error: 'Post not found' });
-    res.json(post);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+export const getPostById = async (req, res, next) => {
+  const post = await Post.findOne({ idPost: req.params.postId });
+  if (!post) return res.status(404).json({ error: 'Post not found' });
+  res.json(post);
 };
 
-export const updatePost = async (req, res) => {
-  try {
-    const post = await Post.findOne({ idPost: req.params.postId });
-    if (!post) return res.status(404).json({ error: 'Post not found' });
-    
-    if (post.author.id !== req.user.id) {
-      return res.status(403).json({ error: 'Unauthorized' });
-    }
+export const updatePost = async (req, res, next) => {
+  const post = await Post.findOne({ idPost: req.params.postId });
+  if (!post) return res.status(404).json({ error: 'Post not found' });
 
-    post.content = req.body.content || post.content;
-    post.isAnonymous = req.body.isAnonymous ?? post.isAnonymous;
-    
-    await post.save();
-    res.json(post);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  if (post.author.id !== req.user.id) {
+    return res.status(403).json({ error: 'Unauthorized' });
   }
+
+  post.content = req.body.content || post.content;
+  post.isAnonymous = req.body.isAnonymous ?? post.isAnonymous;
+
+  await post.save();
+  res.json(post);
 };
 
-export const deletePost = async (req, res) => {
-  try {
-    const post = await Post.findOne({ idPost: req.params.postId });
-    if (!post) return res.status(404).json({ error: 'Post not found' });
-    
-    if (post.author.id !== req.user.id) {
-      return res.status(403).json({ error: 'Unauthorized' });
-    }
+export const deletePost = async (req, res, next) => {
+  const post = await Post.findOne({ idPost: req.params.postId });
+  if (!post) return res.status(404).json({ error: 'Post not found' });
 
-    await Post.deleteOne({ idPost: req.params.postId });
-    await Comment.deleteMany({ postId: req.params.postId });
-    
-    res.status(204).end();
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  if (post.author.id !== req.user.id) {
+    return res.status(403).json({ error: 'Unauthorized' });
   }
+
+  await Post.deleteOne({ idPost: req.params.postId });
+  await Comment.deleteMany({ postId: req.params.postId });
+
+  res.status(204).end();
 };
 
 export const toggleLike = async (req, res) => {
