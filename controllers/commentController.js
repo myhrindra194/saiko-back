@@ -37,3 +37,29 @@ export const getComments = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const getCommentById = async (req, res) => {
+  try {
+    const { commentId } = req.params;
+    const comment = await Comment.findOne({ commentId: commentId });
+    if (!comment) return res.status(404).json({ error: 'Comment not found' });
+    res.json(comment);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  } 
+};
+
+export const deleteComment = async (req, res) => {
+  try {
+    const { commentId } = req.params;
+    const comment = await Comment.findOne({ commentId: commentId });
+    if (!comment) return res.status(404).json({ error: 'Comment not found' });  
+    if (comment.author.id !== req.user.id) {
+      return res.status(403).json({ error: 'Unauthorized' });
+    } 
+    await Comment.deleteOne({ commentId: commentId });
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
